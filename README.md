@@ -20,4 +20,7 @@ npm run dev　　
 
 cd backend　　
 
-node server.js　　
+
+npm install　　
+
+npm start　　
