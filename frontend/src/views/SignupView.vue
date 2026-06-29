@@ -4,7 +4,7 @@
 
     <!-- 共通ボタンエリア -->
     <div class="header-buttons">
-      <button class="back-btn" @click="goBack">
+      <button type="button" class="back-btn" @click="goBack">
         前のページに戻る
       </button>
     </div>
@@ -12,6 +12,8 @@
     <!-- タイトル（共通化） -->
     <h1 class="main-title">占いのハウス</h1>
     <h2 class="sub-title">新規会員登録</h2>
+
+    <div class="wood"></div>
 
     <label>名前</label>
     <input v-model="name" placeholder="名前を入力してください" />
@@ -48,19 +50,26 @@
       未入力の情報があります
     </p>
 
-    <button class="submit-btn" @click="submit">  確認メール送信</button>
+    <button type="button" class="submit-btn" @click="submit"> 
+      確認メール送信
+    </button>
 
     </div>
+
+
+  <p class="credit">
+    Image Credit: NASA
+  </p>
 
   </template>
 
 
 <script setup lang="ts">
-  import { ref } from 'vue'
 
-  const emit = defineEmits<{
-    (e: 'go', page: string): void
-  }>()
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
 
   const name = ref('')
   const email = ref('')
@@ -73,10 +82,10 @@
   const inputError = ref(false)
 
   const goBack = () => {
-    emit('go', 'start')
+    router.push('/') 
   }
 
-  
+
   const submit = async () => {
 
     passwordError.value = false
@@ -89,52 +98,58 @@
       confirmPassword.value === '' ||
       birthdate.value === '' ||
       gender.value === ''
-    ) {
+      )
+      {
       inputError.value = true
       return
-    }
-
-    if (
-      password.value.length < 8 ||
-      password.value.length >= 20 ||
-      password.value !== confirmPassword.value
-    ) {
-      passwordError.value = true
-      return
-    }
-
-    try {
-      const res = await fetch('http://localhost:3000/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-        name: name.value,
-        email: email.value,
-        password: password.value,
-        gender: gender.value,
-        birthdate: birthdate.value
-        })
-
-      })
-
-      const data = await res.json()
-
-      if (res.ok) {
-        //DB登録成功
-        emit('go', 'signup_email')
-      } else {
-        alert(data.error)
       }
 
-    } catch (error) {
-      console.error(error)
-      alert('サーバー接続エラー')
-    }
-  }
+    //パスワード
+    const hasLetter = /[a-zA-Z]/.test(password.value)
+    const hasNumber = /[0-9]/.test(password.value)
 
-</script>
+    if (
+        password.value.length < 8 ||
+        password.value.length >= 20 ||
+        password.value !== confirmPassword.value ||
+
+        !hasLetter || 
+        !hasNumber 
+      ) 
+      {
+        passwordError.value = true
+        return
+      }
+
+    
+  try {
+      
+        const res = await fetch('http://localhost:3000/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: name.value,
+            email: email.value,
+            password: password.value,
+            gender: gender.value,
+            birthdate: birthdate.value
+          })
+        })
+
+        const data = await res.json()
+        console.log(data)
+
+
+        router.push('/signup_email')
+
+      } catch (err) {
+        console.error(err)
+      }
+   }
+
+  </script>
 
 
 <style scoped>
@@ -142,39 +157,75 @@
   /* 全ページ統一 */
   .container {
     text-align: center;
-    margin-top: 80px;  
+
+    min-height: 100vh;
+    width: 100vw; 
+
+    background-image: url('/src/assets/Perseids1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+
   }
+
 
   /* 共通ヘッダー */
   .header-buttons {
-  display: flex;
-  justify-content: flex-end;
-  width: 90%;
-  margin: -40px auto;
-  }
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    }
 
   /* 戻るボタン */
   .back-btn {
-  margin-right: 15%; 
+    margin-right: 20%; 
   }
 
   /* タイトル */
   .main-title {
     font-size: 64px;
     margin-top: 70px;
-    margin-bottom: 50px;
+    margin-bottom: 0;
+
+    position: relative;
+    z-index: 2;
+
+    text-shadow:
+      0 0 3px #fff,
+      0 0 6px #fff,
+      0 0 8px #fff,
+      0 0 12px #fff;
   }
+
 
   /* サブタイトル */
   .sub-title {
     font-size: 32px;
-    margin-bottom: 40px;
+    margin-top: 40px;
+
+    position: relative;
+    z-index: 2;
+
+    text-shadow:
+      0 0 3px #fff,
+      0 0 6px #fff,
+      0 0 8px #fff,
+      0 0 12px #fff;
   }
 
 
   label {
-    color: #000;  
-    font-weight: bold; 
+    color: #000;
+    font-weight: bold;
+    text-align: center;
+    display: block;
+  }
+
+  .main-title,
+  .sub-title {
+    text-align: center;
   }
 
   input::placeholder {
@@ -214,19 +265,45 @@
     color: red;
   }
 
+  .wood {
+    background-image: url('/src/assets/mokuzai2.png');
+    background-size: cover;
+    background-position: center;
 
-  /* スマホ版 */
-  @media (max-width: 600px) {
-  .header-buttons {
-    width: 100%; 
-    padding-right: 10px; 
-    margin: 10px auto;
+    width: 100%;
+    max-width: 640px;
+    height: 800px;
+
+    margin: -150px auto 60px;
+    border-radius: 8px;
+
+    position: static;
+    z-index: 1;
   }
 
-  .back-btn {
-    margin-right: 0; 
+  * {
+    box-sizing: border-box;
   }
 
-}
+
+  label,
+  input,
+  select,
+  .error,
+  .submit-btn {
+    position: relative;
+    top: -700px;
+  }
+
+    /* クレジット */
+  .credit {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+
 
 </style>

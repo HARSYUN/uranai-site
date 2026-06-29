@@ -4,11 +4,8 @@
 
     <!-- ヘッダー -->
     <div class="header-buttons">
-
-      <!-- ユーザー名 -->
       <p class="user">{{ user.name }}様</p>
 
-      <!-- 右ボタン -->
       <div class="right">
         <button class="btn mypage-btn" @click="goMyPage">
           マイページへ
@@ -18,56 +15,57 @@
           ログアウト
         </button>
       </div>
+    </div>
+
+    <!-- 窓枠レイヤー -->
+    <div class="frame-layer"></div>
+
+    <div class="wood-top"></div>
+
+    <!-- 文字・ボタン -->
+    <div class="content">
+
+      <h1 class="main-title">占いのハウス</h1>
+
+      <button class="btn uranai-btn" @click="goResult">
+        今日の運勢を占う
+      </button>
 
     </div>
 
-    <!-- タイトル -->
-    <h1 class="main-title">占いのハウス</h1>
-
-    <!-- メインボタン -->
-    <button class="btn uranai-btn" @click="goResult">
-      今日の運勢を占う
-    </button>
-
   </div>
+
+  <p class="credit">
+    Image Credit: NASA<br>
+    窓枠画像：AI生成
+  </p>
 
 </template>
 
 
 <script setup lang="ts">
+  import { useRouter } from 'vue-router'
 
-  // props
-  const props = defineProps<{
-    user: {
-      name: string
-      email: string
-      password: string
-    }
-  }>()
+  const router = useRouter()
 
-  // emit
-  const emit = defineEmits<{
-    (e: 'go', page: string): void
-  }>()
+  // localStorageからユーザー取得
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
 
-  const user = props.user
-
-  // マイページ
+  // マイページへ
   const goMyPage = () => {
-    emit('go', 'mypage')
+    router.push('/mypage')
   }
 
   // ログアウト
   const logout = () => {
     localStorage.removeItem('user')
-    emit('go', 'start')
+    router.push('/') // スタートへ
   }
 
-  // 占い結果
+  // 占い結果へ
   const goResult = () => {
-    emit('go', 'main_result')
+    router.push('/main_result')
   }
-
 </script>
 
 
@@ -75,24 +73,75 @@
 
   /* 全体 */
   .container {
+    position: relative;
     text-align: center;
-    margin-top: 40px;
-  }
 
+    height: 100vh;
+    width: 100vw;
+
+    background-image: url('/src/assets/TheMilkyWay1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    overflow: hidden;
+  }
 
   /* ヘッダー */
   .header-buttons {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     width: 90%;
     margin: 10px auto;
+
+    position: relative;
+    z-index: 3;
   }
+
+  .frame-layer {
+    position: absolute;
+    top: -5%;
+    right: -5%;
+
+    width: 110vw;
+    height: 110vh;
+
+    background-image: url('/src/assets/AImadowaku3.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    z-index: 1;
+  }
+
+
+  .wood-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 80px;
+
+    background-image: url('/src/assets/mokuzai1.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    z-index: 2;
+  }
+
 
   .user {
     font-weight: bold;
-    font-size: 20px;
+    font-size: 24px;
     white-space: nowrap;
+    color: rgba(0, 0, 0, 0.8);
+
+    position: relative;
+    top: -10px;
   }
 
   .right {
@@ -131,22 +180,41 @@
   /* タイトル */
   .main-title {
     font-size: 4rem;
-    margin: 80px 0;
+    position: relative;
+    margin: 80px;
+
+    text-shadow:
+      0 0 3px #fff,
+      0 0 6px #fff,
+      0 0 9px #fff,
+      0 0 12px #fff;
   }
 
+  /* クレジット */
+  .credit {
+    position: fixed;
+    bottom: 50px;
+    right: -55%;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
 
-  /* スマホ版 */
-  @media (max-width: 600px) {
+    position: relative;
+    z-index: 4;
+  }
+  
+  .content {
+    position: relative;
+    z-index: 2;
 
-    .header-buttons {
-      flex-direction: column;
-      align-items: flex-start;
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    .right {
-      width: 100%;
-    }
-
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
   }
 
 </style>

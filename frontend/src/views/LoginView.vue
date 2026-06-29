@@ -4,7 +4,7 @@
 
     <!-- 共通ボタンエリア -->
     <div class="header-buttons">
-      <button class="back-btn" @click="goBack">
+      <button type="button" class="back-btn" @click="goBack">
         前のページに戻る
       </button>
     </div>
@@ -13,6 +13,9 @@
     <h1 class="main-title">占いのハウス</h1>
     <h2 class="sub-title">会員ログイン</h2>
 
+    <div class="wood"></div>
+
+      <div class="form-area">
     <label>メールアドレス</label>
     <input v-model="email" />
 
@@ -23,91 +26,100 @@
       メールアドレスまたはパスワードが間違っています
     </p>
 
-    <button @click="login">ログイン</button>
+    <button type="button" @click="login">
+      ログイン
+    </button>
 
   </div>
+
+  </div>
+
+  <p class="credit">
+    Image Credit: NASA <br>
+    窓枠画像: AI生成
+  </p>
 
 </template>
 
 
 <script setup lang="ts">
-  import { ref } from 'vue'
 
-  const emit = defineEmits<{
-    (e: 'go', page: string): void
-    (e: 'login-success', user: {
-      name: string
-      email: string
-      gender: string
-      birthdate: string
-      created_at: string
-    }): void
-  }>()
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-  const email = ref('')
-  const password = ref('')
-  const errorMessage = ref(false)
+const router = useRouter()
+const email = ref('')
+const password = ref('')
+const errorMessage = ref(false)
 
-  // ログイン
-  const login = async () => {
+const goBack = () => {
+  router.push('/')
+}
 
-    if (email.value === '' || password.value === '') {
-      errorMessage.value = true
-      return
-    }
+const login = async () => {
 
-    try {
-      const res = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: email.value,
-          password: password.value
-        })
+  if (email.value === '' || password.value === '') {
+    errorMessage.value = true
+    return
+  }
+
+  try {
+    const res = await fetch('http://localhost:3000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value
       })
+    })
 
-      const data = await res.json()
+    if (!res.ok) {
+      throw new Error('通信エラー')
+    }
 
-      
-  if (data.success) {
-    errorMessage.value = false
+    const data = await res.json()
 
-    // ユーザー情報を親に渡す
-    emit('login-success', data.user)
-
-    // 画面遷移
-    emit('go', 'main')
-  }
-  else {
-        errorMessage.value = true
-      }
-
-    } catch (error) {
-      console.error(error)
+    if (data.success) {
+      localStorage.setItem('user', JSON.stringify(data.user))
+      errorMessage.value = false
+      router.push('/main')
+    } else {
       errorMessage.value = true
     }
-  }
 
-  // 戻る
-  const goBack = () => {
-    emit('go', 'start')
+  } catch (e) {
+    console.error(e)
+    errorMessage.value = true
   }
+}
+
 </script>
+
+
 
 <style scoped>
 
   /* 全体 */
   .container {
     text-align: center;
-    margin-top: 0px; 
+
+    height: 100vh;
+    width: 100vw;
+
+    background-image: url('/src/assets/Lyrid1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    overflow: hidden;
   }
 
   /* ボタン共通 */
   .header-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     width: 90%;
     margin: 10px auto;
   }
@@ -131,14 +143,34 @@
     margin-right: 15%; 
   }
 
+  .wood {
+    background-image: url('/src/assets/mokuzai1.png');  /* ←変更 */
+    background-size: cover;
+    background-position: center;
+
+    width: 100%;
+    max-width: 640px;
+    height: 500px;
+
+    margin: -170px auto 60px;  /* Startと同じ動き */
+    border-radius: 8px;
+
+    position: static;
+    z-index: 1;
+  }
+
 
   /* タイトル */
   .main-title {
+    position: relative;
+    top: 60px;
     font-size: 4rem;
     margin-bottom: 50px;
   }
 
   .sub-title {
+    position: relative;
+     top: 60px;
     font-size: 2rem;
     margin-top: 0;
     margin-bottom: 40px;
@@ -148,6 +180,13 @@
     color: #000;
     font-weight: bold;
   }
+
+  .form-area {
+    position: relative;
+    top: -350px;
+    z-index: 2;
+  }
+
 
   /* 入力 */
   input {
@@ -160,6 +199,15 @@
     color: #000;
   }
 
+  .main-title,
+  .sub-title,
+  label,
+  input,
+  button,
+  .error {
+    z-index: 2;
+  }
+
 
 
   /* エラー */
@@ -167,17 +215,14 @@
     color: red;
   }
 
-
-  /* スマホ版 */
-  @media (max-width: 600px) {
-    .header-buttons {
-      width: 100%;
-      padding-right: 10px;
-    }
-
-    .back-btn {
-      margin-right: 0;
-    }
+    /* クレジット */
+  .credit {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
   }
+  
 
 </style>

@@ -11,6 +11,9 @@
         <span class="chunk">ハウスへ</span>
       </h1>
 
+      <!-- 背景 -->
+      <div class="wood"></div>
+
 
       <!--  ログイン -->
       <button class="login-btn" @click="goLogin">
@@ -24,22 +27,28 @@
 
   </div>
 
+  <p class="credit">
+    Image Credit: NASA
+  </p>
+
+
 </template>
 
 
 <script setup lang="ts">
 
-  const emit = defineEmits<{
-    (e: 'go', page: string): void
-  }>()
+import { useRouter } from 'vue-router'
 
-  const goLogin = () => {
-    emit('go', 'login')
-  }
+const router = useRouter()
 
-  const goSignup = () => {
-    emit('go', 'signup')
-  }
+const goLogin = () => {
+  router.push('/login')
+}
+
+const goSignup = () => {
+  router.push('/signup')
+}
+
 </script>
 
 
@@ -48,9 +57,18 @@
   /* 全体 */
   .container {
     text-align: center;
-    margin-top: 60px;
-    padding: 0 20px; 
+
+    height: 100vh;
+    width: 100vw;
+
+    background-image: url('/src/assets/Perseids1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    overflow: hidden;
   }
+
 
   /* ヘッダー */
   .header-buttons {
@@ -64,57 +82,64 @@
   /* タイトル */
   .title {
     font-size: 4rem;
-    margin: 40px auto 80px;
+    margin: 40px auto 40px;  /* ←80 → 40 に変更 */
     line-height: 1.4;
     text-align: center;
-    white-space: nowrap; 
+    white-space: nowrap;
+
+    text-shadow:
+      0 0 3px #fff,
+      0 0 6px #fff,
+      0 0 8px #fff,
+      0 0 12px #fff;
+
+    position: relative;
+    z-index: 2;
   }
 
-
-  /* ボタン共通 */
+  /* ボタン */
   button {
     display: block;
     width: 100%;
     max-width: 320px;
-    margin: 50px auto;
+    margin: 20px auto;  /* ←50 → 20 */
     padding: 12px;
     font-size: 1.5rem;
     border-radius: 6px;
   }
 
-  /* 個別（微調整だけ） */
   .login-btn {
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   .signup-btn {
     margin-top: 10px;
   }
 
+  /* 木材 */
+  .wood {
+    background-image: url('/src/assets/mokuzai1.png');
+    background-size: cover;
+    background-position: center;
 
-  .chunk {
-    white-space: nowrap; 
+    width: 100%;
+    max-width: 740px;
+    height: 140px;
+
+    margin: 20px auto 60px;
+    margin-top: -150px;
+    border-radius: 8px;
+
+    z-index: 1;
   }
 
-
-  .br-sp {
-    display: none;
+  /* クレジット */
+  .credit {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
   }
-
-
-  /* スマホ版 */
-  @media (max-width: 600px) {
-
-    .title {
-      font-size: 3rem;
-      white-space: normal;   /* ←スマホだけ折り返しOK */
-    }
-
-    .br-sp {
-      display: block;
-    }
-    
-  }
-    
   
 </style>

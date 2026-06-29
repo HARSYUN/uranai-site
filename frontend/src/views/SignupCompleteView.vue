@@ -2,54 +2,89 @@
 
   <div class="container">
 
-    <!-- ① タイトル -->
+    <!-- タイトル -->
     <h1>占いのハウス</h1>
     <h2>新規会員登録</h2>
 
-    <!-- ② メッセージ -->
+    <div class="wood"></div>
+
+    <!-- メッセージ -->
     <p class="message">
       会員登録が完了しました<br>
       スタート画面へお戻りください
     </p>
 
-    <!-- ③ ボタン -->
+    <!-- ボタン -->
     <button @click="goStart">
       スタート画面へ
     </button>
 
   </div>
 
+  <p class="credit">
+    Image Credit: NASA
+  </p>
+
 </template>
 
 
 <script setup lang="ts">
-  const emit = defineEmits<{
-    (e: 'go', page: string): void
-  }>()
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
 
   const goStart = () => {
-    emit('go', 'start')
+    router.push('/')
   }
 </script>
+
 
 
 <style scoped>
   .container {
     text-align: center;
-    margin-top: 50px;
+
+    min-height: 100vh;
+    width: 100vw;
+
+    height: 100vh;
+
+    background-image: url('/src/assets/Perseids1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
 
   h1 {
     font-size: 4rem;
+    top: 80px;
+    margin-top: 60px;
     margin-bottom: 80px; 
   }
 
   h2 {
+    top: 60px;
     font-size: 2rem;
-    margin-top: 0; 
     margin-bottom: 40px;
   }
+
+  .wood {
+    background-image: url('/src/assets/mokuzai2.png');
+    background-size: cover;
+    background-position: center;
+
+    width: 100%;
+    max-width: 640px;
+    height: 500px;
+
+    margin: -150px auto 60px;
+    border-radius: 8px;
+
+    position: static;
+    z-index: 1;
+  }
+
 
 
   .message {
@@ -68,5 +103,28 @@
     font-size: 1.2rem;
     border-radius: 6px;
   }
+
+  h1, h2, .message, button {
+    position: relative;
+    z-index: 2;
+  }
+
+  .message,
+  button {
+    position: relative;
+    top: -350px;   /* ←ここ調整ポイント */
+    z-index: 2;
+  }
+
+
+  /* クレジット */
+  .credit {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
 
 </style>
